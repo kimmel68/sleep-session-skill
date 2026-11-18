@@ -11,7 +11,7 @@ Du schreibst genau eine Datei: `{ORDNER}/_schlaf/{DATUM}_vorschlag.md`. Den Ordn
 
 **Lesen:** `MEMORY.md` und **alle** Dateien des Ordners (nicht `_archiv/`, nicht `_schlaf/`).
 
-**Schreiben**, auf Deutsch, in diesen Abschnitten. Zu jedem Punkt die Quelldateien nennen, Zitate des Nutzers höchstens 15 Wörter.
+**Schreiben**, in der Sprache der Memory-Dateien, in diesen Abschnitten. Zu jedem Punkt die Quelldateien nennen, Zitate des Nutzers höchstens 15 Wörter.
 
 ## A Regeln (Festigen)
 Gemeint sind Lehren, die in mehreren Dateien oder Urteilen vorkommen. Je Regel:
@@ -35,7 +35,7 @@ Ein vollständiger neuer `MEMORY.md`:
 - Reihenfolge nach Themen gruppiert, je Gruppe eine Überschrift `## …`.
 
 ## D Offene Urteile
-Eine Tabelle: Datei, was auf das Urteil des Nutzers wartet (Song, Hörprobe, Funktion), seit wann. Steht das Urteil im Replay,
+Eine Tabelle: Datei, was auf das Urteil des Nutzers wartet (Entwurf, Probe, Funktion, Entscheidung), seit wann. Steht das Urteil im Replay,
 schreibe es dazu und markiere den Punkt als erledigt.
 
 ## E Verdichten und Archiv

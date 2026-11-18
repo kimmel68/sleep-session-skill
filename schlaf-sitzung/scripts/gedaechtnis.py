@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Werkzeug der Schlaf-Sitzung: das dateibasierte Gedaechtnis pruefen und Ersetztes archivieren. Nur Standardbibliothek.
 
-    python gedaechtnis.py inventar <memory-ordner> [--json]     Befund: Index, Dateien, Verweise, Kopf, offene Urteile
+    python gedaechtnis.py inventar <memory-ordner> [--json] [--zeile-max 150] [--offen "<regex>"]
+                                                                Befund: Index, Dateien, Verweise, Kopf, offene Urteile
     python gedaechtnis.py archiv <memory-ordner> <datei.md> --grund "<warum>"   nach _archiv/<datum>_<datei>, Index-Zeile raus
 
 Nichts wird geloescht. Das Archiv liegt im Gedaechtnisordner unter _archiv/ (wird nicht geladen, bleibt umkehrbar).
@@ -15,8 +16,9 @@ import shutil
 import sys
 
 INDEX = 'MEMORY.md'
-ZEILE_MAX = 150                 # Zeichen je Index-Zeile; darueber gehoert der Inhalt in die Datei
-OFFEN = re.compile(r'(Urteil (steht )?aus|steht aus|Urteil offen|noch nicht geh[oö]rt)', re.I)
+ZEILE_MAX = 150                 # Zeichen je Index-Zeile; darueber gehoert der Inhalt in die Datei (--zeile-max)
+# Wendungen, an denen ein offenes Urteil des Nutzers zu erkennen ist (--offen ersetzt sie), deutsch und englisch
+OFFEN = r'(Urteil (steht )?aus|steht aus|Urteil offen|noch nicht gepr[uü]ft|wartet auf (das )?Urteil|awaiting (user )?(feedback|review|approval)|pending (user )?(feedback|review|approval)|not yet reviewed)'
 
 
 def lesen(pfad):
@@ -39,14 +41,15 @@ def kopf(text):
     return felder, text[m.end():]
 
 
-def inventar(ordner):
+def inventar(ordner, zeile_max=ZEILE_MAX, offen=OFFEN):
+    offen_re = re.compile(offen, re.I)
     idx_pfad = os.path.join(ordner, INDEX)
     idx = lesen(idx_pfad) if os.path.exists(idx_pfad) else ''
     eintraege = re.findall(r'^- \[([^\]]+)\]\(([^)]+)\)(.*)$', idx, re.M)
     im_index = {d for _, d, _ in eintraege}
     dateien = sorted(f for f in os.listdir(ordner) if f.endswith('.md') and f != INDEX)
     namen, befund = {}, {'dateien': len(dateien), 'index_zeilen': len(eintraege), 'index_zeichen': len(idx)}
-    lang = [(d, len('- [%s](%s)%s' % (t, d, r))) for t, d, r in eintraege if len('- [%s](%s)%s' % (t, d, r)) > ZEILE_MAX]
+    lang = [(d, len('- [%s](%s)%s' % (t, d, r))) for t, d, r in eintraege if len('- [%s](%s)%s' % (t, d, r)) > zeile_max]
     befund['index_zu_lang'] = sorted(lang, key=lambda x: -x[1])
     befund['index_ohne_datei'] = sorted(d for d in im_index if not os.path.exists(os.path.join(ordner, d)))
     befund['datei_ohne_index'] = [d for d in dateien if d not in im_index]
@@ -59,7 +62,7 @@ def inventar(ordner):
             ohne_kopf.append(d)
         else:
             namen[k['name']] = d
-        if OFFEN.search(t):
+        if offen_re.search(t):
             offen.append(d)
         links[d] = set(re.findall(r'\[\[([^\]]+)\]\]', rumpf))
     befund['ohne_vollen_kopf'] = ohne_kopf
@@ -99,6 +102,8 @@ def main():
     i = u.add_parser('inventar')
     i.add_argument('ordner')
     i.add_argument('--json', action='store_true')
+    i.add_argument('--zeile-max', type=int, default=ZEILE_MAX)
+    i.add_argument('--offen', default=OFFEN, help='regulaerer Ausdruck fuer offene Urteile')
     r = u.add_parser('archiv')
     r.add_argument('ordner')
     r.add_argument('datei')
@@ -106,7 +111,7 @@ def main():
     o = a.parse_args()
     if o.befehl == 'archiv':
         return archiv(o.ordner, o.datei, o.grund)
-    b = inventar(o.ordner)
+    b = inventar(o.ordner, o.zeile_max, o.offen)
     if o.json:
         print(json.dumps(b, ensure_ascii=False, indent=1, default=list))
         return

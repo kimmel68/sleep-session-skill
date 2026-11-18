@@ -11,7 +11,7 @@ The idea is adapted from the SLEEP framework, which alternates a model between a
 - Paper: Ali Behrouz, Farnoosh Hashemi, Adel Javanmard, Vahab Mirrokni. *Language Models Need Sleep: Learning to
   Self-Modify and Consolidate Memories.* 2026. https://arxiv.org/abs/2606.03979
 - Article: *The sleep framework: A new way for LLMs to retain knowledge in continual learning.* Google Research,
-  27 Oct 2026. https://research.google/blog/the-sleep-framework-a-new-way-for-llms-to-retain-knowledge-in-continual-learning/
+  2026. https://research.google/blog/the-sleep-framework-a-new-way-for-llms-to-retain-knowledge-in-continual-learning/
 
 Here there are no weights, only files; `schlaf-sitzung/SKILL.md` maps each part of the framework onto memory files.
 This is an independent adaptation, not affiliated with the authors.
@@ -22,9 +22,10 @@ This is an independent adaptation, not affiliated with the authors.
 |---|---|
 | `schlaf-sitzung/SKILL.md` | the skill: principles, the five steps (inventory, replay, proposal, check and write, review) |
 | `schlaf-sitzung/prompts/vorschlag.md` | the brief for the proposing agent (reads everything, writes one proposal file) |
-| `schlaf-sitzung/scripts/gedaechtnis.py` | `inventar` (index, headers, dead links, open judgments) and `archiv` (move to `_archiv/`), standard library only |
+| `schlaf-sitzung/scripts/gedaechtnis.py` | `inventar` (index, headers, dead links, open judgments; `--zeile-max`, `--offen`) and `archiv` (move to `_archiv/`, never delete), standard library only |
 
-The skill text is in German.
+The skill text is in German. It works with any project: it expects Claude Code's file-based memory format (an index
+`MEMORY.md` plus one Markdown file per fact with `name`, `description` and `metadata.type` in the frontmatter).
 
 ## Install
 
